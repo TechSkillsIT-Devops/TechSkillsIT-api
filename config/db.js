@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 function dbConnect(){
     try{
-        mongoose.connect('mongodb+srv://techskillsit:c5ty9DYvjahnel5L@cluster0.ay1gjkf.mongodb.net/?retryWrites=true&w=majority');
+        mongoose.connect(process.env.DB_URL);
         console.log('MongoDB connected..');
     }
     catch(err){

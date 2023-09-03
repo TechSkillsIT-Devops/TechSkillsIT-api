@@ -5,7 +5,8 @@
         "src": "index.js",
         "use": "@now/node",
         "config": {
-          "NODE_ENV": "production", 
+          "NODE_ENV": "production",
+          "DB_URL" : "mongodb+srv://techskillsit:c5ty9DYvjahnel5L@cluster0.ay1gjkf.mongodb.net/?retryWrites=true&w=majority",
           "GOOGLE_CLIENT_ID" : "820466410863-iit2vhks6l6ihpai71ti69godi83712d.apps.googleusercontent.com",
           "GOOGLE_CLIENT_SECRET" : "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",
           "REDIRECT_URL" : "https://tech-skills-it-api.vercel.app/api/google/callback" ,
