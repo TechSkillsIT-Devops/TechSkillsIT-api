@@ -1,0 +1,330 @@
+NodeJS
+======
+- npm init 
+
+Install dependencies
+--------------------
+npm i 
+express  <API Server>
+express-validator <validate the API request body>
+bcrypt <password encoding>
+config <global variables>
+jsonwebtoken <for jwt token>
+mongoose <tool for interacting with mongo>
+
+npm i -D 
+nodemon <auto reload/compile> 
+concurrently <>run react and node at a same time 
+
+Change package.json
+--------------------
+"scripts": {
+    "start": "node server",
+    "server": "nodemon server"
+  }
+
+Set-up express Server
+---------------------
+create index.js/server.js
+
+/* Set Up Express Server */
+const express = require("express");
+const app = express();
+
+/* process is a package that lets us access env variable PORT */
+const PORT = process.env.PORT |  5000;
+
+/* Tell app to listen to port:5000 */
+app.listen(PORT, ()=>{
+    console.log(`Server started on port ${PORT}`); 
+});
+
+Run the App
+-----------
+npm run server
+
+/* simple test api */
+
+app.get('/',(req,res)=>{
+    res.send('API Called..');
+});
+
+Activity 1: 
+==========
+Create a function in functions.js file and call from server.js. 
+
+functions.js
+--------------
+function add(n1,n2){
+    return n1+n2;
+}
+
+module.exports = {add}
+
+server.js
+---------
+const f = require('./functions');
+
+app.get('/',(req,res)=>{
+    res.send({'value': f.addTwoNumbers(4,4)} );
+});
+
+
+Activity 2: Callback functions
+===============================
+functions.js
+------------
+function placeOrder(order){
+    console.log('order is placed: ' + order); 
+}
+
+function makePayment(amount){
+    console.log('please make the payment: $' + amount);
+}
+
+module.exports={ addTwoNumbers, placeOrder, makePayment}
+
+Server.js
+---------
+f.placeOrder('Apple IPhone');
+f.makePayment(500);
+
+With callback
+-------------
+functions.js
+------------
+function placeOrder(order, callback){
+    console.log('order is placed: ' + order);
+    callback(); 
+}
+
+module.exports={ addTwoNumbers, placeOrder}
+
+Server.js
+---------
+f.placeOrder('Apple IPhone',()=>{console.log('Make payment: $' + 500); });
+
+
+Activity 3 : Promise Demo
+-------------------------
+
+function promiseDemo(userId){
+    let userIdPromise = new Promise((resolve, reject) => {
+        resolve('delete the user with ID: ' + userId);
+    }); 
+
+    return userIdPromise;
+}
+
+f.promiseDemo(5).then((res)=>{
+    console.log('User Deleted ');
+});
+
+Example 2
+=========
+function getUsers(onSuccess) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      // Handle resolve and reject in the asynchronous API
+      if (onSuccess) {
+        resolve([
+          {id: 1, name: 'Jerry'},
+          {id: 2, name: 'Elaine'},
+          {id: 3, name: 'George'},
+        ])
+      } else {
+        reject('Failed to fetch data!')
+      }
+    }, 1000)
+  })
+}
+
+Example 3: 
+=========
+Fetch API with Promise
+----------------------
+
+
+npm install node-fetch
+const fetch = require("node-fetch");
+
+  /* Api for calling Users */
+	app.get("/users", (req,res)=>{
+     fetch('https://jsonplaceholder.typicode.com/users1')
+    .then(response=>response.json())
+    .then(data=> res.send(data))
+    .catch(error=>console.error(error));
+})
+
+In server.js
+------------
+  f.callPostsAPi();
+
+Then create API for this Users. 
+
+
+  app.get('/users', (req,res)=>{
+    fetch('https://jsonplaceholder.typicode.com/users')
+  .then((response) => {
+    return response.json()
+  })
+  .then((data) => {
+    res.send(data);
+  })
+  .catch((error) => {
+    console.error(error)
+  })
+     
+
+Convert API to async/await
+--------------------------
+app.get('/users',async (req,res)=>{
+   try{
+    let response =  await fetch('https://jsonplaceholder.typicode.com/users')
+    let data = await response.json(); 
+    res.send(data);
+   }
+   catch(err){
+        res.send(400, {'msg': err.msg}); 
+   }
+});
+
+//define routes 
+
+Create employee.js in routes/api folder
+
+IN routes/api/employee.js
+-------------------------
+/* Import Express and Router */
+const express = require('express');
+const router = express.Router();
+
+router.get('/',(req,res)=>{
+    res.send('employee / called..')
+});
+
+module.exports = {router};
+
+Create auth.js in routes/api folder
+
+In routes/api/auth.js
+---------------------
+/* Import Express and Router */
+const express = require('express');
+const router = express.Router();
+
+router.get('/',(req,res)=>{
+    res.send('auth / called..')
+});
+
+module.exports = {router};
+
+In server.js
+------------
+//API Middleware
+app.use(express.json({
+    extended: false
+}));
+   
+//define routes
+app.use('/api/employee', require('./routes/api/employee'));
+app.use('/api/auth', require('./routes/api/auth'));
+
+
+PART-II
+-------
+Connect to MongoDB
+=================
+
+Create a config folder and in that create db.js
+
+
+const mongoose = require('mongoose');
+
+function dbConnect(){
+    try{
+        mongoose.connect('mongodb+srv://root:Password123@cluster0.jhkwy0f.mongodb.net/?retryWrites=true&w=majority');
+        console.log('MongoDB connected..');
+    }
+    catch(err){
+        console.log(err.message);
+        process.exit(1);
+    }
+}
+
+module.exports = {dbConnect};
+
+In Server.js - call this function.
+
+//Connect DB
+dbConnect();
+
+
+Create Employee POST API
+========================
+IN Employee.js
+--------------
+/* Import Express and Router */
+const express = require('express');
+const router = express.Router();
+const Employee = require('../../models/Employee');
+
+router.get('/',(req,res)=>{
+    res.send('employee / called..')
+});
+
+router.post('/add',async (req,res)=>{
+
+    const {name,jobTitle,managerId,email,password} = req.body;
+
+    let employee = new Employee({
+        name,jobTitle,managerId,email,password
+    });
+
+    await employee.save();
+    res.send('employee record added..')
+});
+
+module.exports = router;
+
+API Enhancement:
+----------------
+- Encrypt password using bcrypt
+
+router.post('/add',async (req,res)=>{
+
+    const {name,jobTitle,managerId,email,password} = req.body;
+
+    let employee = new Employee({
+        name,jobTitle,managerId,email,password
+    });
+
+    /* Encrypt the password */
+    const salt = await bcrypt.genSalt(10); //salt generated
+
+    employee.password = await bcrypt.hash(password,salt); 
+    
+    await employee.save();
+    res.send('employee record added..')
+});
+
+ADD Validation
+--------------
+router.post('/add',[
+        body('name','Name is required').not().isEmpty(), 
+        body('jobTitle','Job Title is required').not().isEmpty(),
+        body('managerId','Manager Id is required').not().isEmpty(),
+        body('email','Email is required').isEmail(),
+        body('password','Password of min length 5 is required').isLength({min:5})
+    ],async (req,res)=>{
+        /* check if errors exists */
+        const errors$ = validationResult(req);
+
+        if(!errors$.isEmpty()){
+            return res.status(400).json({errors: errors$.array()}); 
+        }
+
+    const {name,jobTitle,managerId,email,password} = req.body;
+
+
+
