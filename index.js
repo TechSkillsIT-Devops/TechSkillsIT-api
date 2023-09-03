@@ -26,7 +26,7 @@ app.use(cors());
 app.use(express.json());
 
 //Connect DB
-dbConnect();
+//dbConnect();
 
 /* create get for / */
 app.get("/", (req, res) => {
