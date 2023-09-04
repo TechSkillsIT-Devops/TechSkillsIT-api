@@ -1,11 +1,11 @@
 /* Set up Express Server */
 const express = require("express");
-const dotenv = require('dotenv');
-if (process.env.NODE_ENV === 'production') {
-  dotenv.config({ path: '.env.prod' });
-} else {
-  dotenv.config({ path: '.env.dev' });
-}
+// const dotenv = require('dotenv');
+// if (process.env.NODE_ENV === 'production') {
+//   dotenv.config({ path: '.env.prod' });
+// } else {
+//   dotenv.config({ path: '.env.dev' });
+// }
 
 const { add } = require("./functions");
 const fetch = require("node-fetch");
