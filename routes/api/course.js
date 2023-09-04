@@ -3,7 +3,7 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
 const { body, validationResult } = require("express-validator");
-const Course = require("../../models/course");
+const Course = require("../../models/Course");
 
 router.get("/", (req, res) => {
   res.send("course / called..");
