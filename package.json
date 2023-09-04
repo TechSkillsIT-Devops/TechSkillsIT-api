@@ -1,5 +1,5 @@
 {
-  "name": "elm",
+  "name": "techskillsit-api",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -7,8 +7,16 @@
     "start": "SET NODE_ENV=development & nodemon index.js",
     "server": "SET NODE_ENV=production & node index.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TechSkillsIT-Devops/TechSkillsIT-api.git"
+  },
   "author": "",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TechSkillsIT-Devops/TechSkillsIT-api/issues"
+  },
+  "homepage": "https://github.com/TechSkillsIT-Devops/TechSkillsIT-api#readme",
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "config": "^3.3.8",
