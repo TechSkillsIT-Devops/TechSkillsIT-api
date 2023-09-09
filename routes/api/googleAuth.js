@@ -89,7 +89,7 @@ router.get(
   function (req, res) {
     // Redirect to a page where the token can be easily copied from the URL
     const token = req.token;
-    res.redirect(`${process_env_REDIRECT_URL_UI}/dashboard?token=${token}`);
+    res.redirect(`${process.env.REDIRECT_URL_UI}/dashboard?token=${token}`);
   }
 );
 
