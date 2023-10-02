@@ -18,6 +18,7 @@ const passport = require("passport");
 const User = require("./models/User");
 const app = express();
 const middleware = require("./middleware/auth");
+ const enrollTrack = require("./routes/api/enrollTrack")
 
 
 
@@ -43,6 +44,7 @@ app.use('/api/track', require('./routes/api/track'));
 app.use('/api/course', require('./routes/api/course'));
 app.use('/api/module', require('./routes/api/module'));
 app.use('/api/video', require('./routes/api/video'));
+app.use('/api/enrolled',enrollTrack);
 
 
 /* Api for calling Users */
@@ -66,11 +68,12 @@ app.post("/user-info", middleware,(req, res) => {
             if (!user) {
               res.status(401).send({ message: "user not found" });
             }else{
-              res.status(200).send({
-                Id: user.Id,
+              const userdata = {
+                Id: user._id,
                 name: user.userName,
                 email: user.email,
-              });
+              }
+              res.status(200).send(userdata);
             }
           } catch (e) {
             console.log(e);
