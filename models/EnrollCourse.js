@@ -6,7 +6,7 @@ const EnrollCourseSchema = new mongoose.Schema({
         type: String
     },
     userId: {
-        type: Number
+        type: String
     },
     enrollDate:{
         type: Date,

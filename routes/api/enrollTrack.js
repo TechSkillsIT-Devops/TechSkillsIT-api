@@ -1,7 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const middleware = require("../../middleware/auth");
-const EnrollTrack = require('../../models/EnrollTrack')
+const EnrollTrack = require('../../models/EnrollTrack');
+const EnrollCourses = require("../../models/EnrollCourse");
+const Course = require("../../models/Course");
+ 
 
 
 
@@ -25,13 +28,35 @@ router.post('/enroll-track', middleware, (req, res) => {
                coupon: req.body.coupon ?? ''
            });
 
-           enrollTrack.save((err, enrolled) => {
-               if (err) {
-                   res.status(500).send('Error occurred');
-               } else {
-                   res.status(200).send(enrolled);
-               }
-           });
+           const enrollCoursePromises = req.body.coursesIds.map((courseId) => {
+            return EnrollCourses.findOne({
+              courseId,
+              userId: req.body.userId,
+            }).then((existingCourse) => {
+              if (!existingCourse) {
+                const enrollCourse = new EnrollCourses({
+                  courseId,
+                  userId: req.body.userId,
+                  feePaid: req.body.fee || '',
+                  coupon: req.body.coupon || '',
+                });
+                return enrollCourse.save();
+              }
+              return null; // Return null for courses that already exist
+            });
+          });
+      
+          const enrolledCourses = Promise.all(enrollCoursePromises);
+           enrolledCourses.then(()=>{
+            enrollTrack.save((err, enrolled) => {
+              if (err) {
+                  res.status(500).send('Error occurred');
+              } else {
+                  res.status(200).send(enrolled);
+              }
+          });
+           })
+         
        }
    });
 });

@@ -18,8 +18,8 @@ const passport = require("passport");
 const User = require("./models/User");
 const app = express();
 const middleware = require("./middleware/auth");
- const enrollTrack = require("./routes/api/enrollTrack")
-
+ const enrollTrack = require("./routes/api/enrollTrack");
+ const enrollCourse = require ("./routes/api/enrolledCourses");
 
 
 
@@ -45,6 +45,7 @@ app.use('/api/course', require('./routes/api/course'));
 app.use('/api/module', require('./routes/api/module'));
 app.use('/api/video', require('./routes/api/video'));
 app.use('/api/enrolled',enrollTrack);
+app.use('/api/courses', enrollCourse);
 
 
 /* Api for calling Users */
