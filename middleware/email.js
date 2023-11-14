@@ -38,7 +38,7 @@ const email = new Email({
 
 // Define the email sending function
 const sendEmail = async (recipient, subject, templateName, emaildata ) => {
-    console.log("Sending email");
+   
     try {
         const options ={
             template: templateName,  // Use the provided templateName variable
@@ -58,6 +58,7 @@ const sendEmail = async (recipient, subject, templateName, emaildata ) => {
         
         //console.log('Template file path:', path.join(templatesPath, `${templateName}.hbs`));
         const result = await email.send(options).catch(err=> console.log(err));
+        console.log("Sending email");
        // console.log('Rendered HTML content:', result.originalMessage.html)
 
         // console.log('Email sent successfully:', result);
