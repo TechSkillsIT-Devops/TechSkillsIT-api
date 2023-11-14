@@ -6,6 +6,8 @@ const User = require("../../models/User");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const secretKey = "YOUR_SECRET_KEY";
+const emailVerferfication = require('../../middleware/email')
+const helper =  require('../../helper')
 
 
 passport.use(new LocalStrategy({
@@ -34,25 +36,37 @@ passport.use(new LocalStrategy({
     }
   ));
 
+  const userStorage = new Map();
+
+  // Step 1: Generate and store unique OTP for each user
+  const generateAndStoreOTP = (userEmail) => {
+    const otp = helper.generateOTP();
+    const timestamp = new Date();
+    const expirationTime = new Date(timestamp.getTime()+ 15 * 60 * 1000) ;
+    userStorage.set(userEmail, { otp, timestamp,expirationTime, verified: false });
+    return otp;
+  };
 
 router.post("/register", async (req, res) => {
   try {
     const { email, userName, password } = req.body;
-    console.log(req.body)
     // Hash the password before saving
-    const hashedPassword = await bcrypt.hash(password, 10);
+   
     User.findOne({ email }, async (err, user) => {
       if (user) {
         res.status(500).json({ error: "Registration failed" });
       } else {
-        const newUser = new User({
-          email,
-          userName,
-          password : hashedPassword,
-          token: jwt.sign({ username: userName },secretKey, { expiresIn: '24h' }),
-        });
-        await newUser.save();
-        res.json({ message: "Registered successfully", token : newUser.token });
+         const otp = generateAndStoreOTP(email);
+         const emaildata = {
+          title : `Welcome ${userName} ,`,
+          message : 'Thank you for joining us. Please verify your email with below otp to proceed further',
+          otp
+      }
+        
+       
+        emailVerferfication.sendEmail(email,'Verfication email','login', emaildata);
+        res.status(200).json({ message : 'otp send succussfully' });
+        // res.json({ message: "Registered successfully", token : newUser.token });
       }
     });
   } catch (error) {
@@ -61,6 +75,37 @@ router.post("/register", async (req, res) => {
   }
 });
 
+router.post('/verify-email',async (req, res)=>{
+  try{
+    const { email,userName, password, otp} = req.body
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const userboolean =  userStorage.has(email);
+    if(!userboolean){
+     res.status(500).json({ message  : 'no  email found'});
+    }else if(userboolean){
+      const verficationOtp =  userStorage.get(email).otp;
+      const isExpired = helper.isOTPExpired(email,userStorage);
+      if(verficationOtp === otp && !isExpired){
+       const newUser = new User({
+         email,
+         userName,
+         password : hashedPassword,
+         emailVerified : true,
+         token: jwt.sign({ username: userName },secretKey, { expiresIn: '24h' }),
+       });
+       await newUser.save();
+       userStorage.delete(email);
+       res.status(200).json({ message: "Registered successfully", token : newUser.token });
+      }else if(isExpired){
+        res.status(500).json({ message: "otp expired"});
+      }
+    }
+  }catch(err){
+    console.log(err)
+    res.status(500).json({ err: "Registration failed" });
+  }
+}
+)
 
 
 
