@@ -64,8 +64,10 @@ router.post("/register", async (req, res) => {
       }
         
        
-        emailVerferfication.sendEmail(email,'Verfication email','login', emaildata);
-        res.status(200).json({ message : 'otp send succussfully' });
+        emailVerferfication.sendEmail(email,'Verfication email','login', emaildata).then(()=>{
+          res.status(200).json({ message : 'otp send succussfully' });
+        }).catch(err => console.log(err));
+       
         // res.json({ message: "Registered successfully", token : newUser.token });
       }
     });
