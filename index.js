@@ -20,6 +20,8 @@ const app = express();
 const middleware = require("./middleware/auth");
  const enrollTrack = require("./routes/api/enrollTrack");
  const enrollCourse = require ("./routes/api/enrolledCourses");
+ const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('./swagger.json');
 
 
 
@@ -46,6 +48,7 @@ app.use('/api/module', require('./routes/api/module'));
 app.use('/api/video', require('./routes/api/video'));
 app.use('/api/enrolled',enrollTrack);
 app.use('/api/courses', enrollCourse);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 
 /* Api for calling Users */

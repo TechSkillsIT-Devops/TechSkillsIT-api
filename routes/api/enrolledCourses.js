@@ -7,7 +7,7 @@ const Course = require("../../models/Course");
 
 
 
-router.post('/enroll-courses',(req, res)=>{
+router.post('/enroll-courses',middleware,(req, res)=>{
     const courses = new EnrollCourses({
         courseId: req.body.courseId,
         userId: req.body.userId,
@@ -27,7 +27,7 @@ router.post('/enroll-courses',(req, res)=>{
 
 })
 
-router.get('/course-status/:userId/:courseId',(req, res)=>{
+router.get('/course-status/:userId/:courseId',middleware, (req, res)=>{
     const { userId, courseId } = req.params;
     EnrollCourses.findOne({ userId, courseId}, (err, existingEnroll) => {
        if (err) {
