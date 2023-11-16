@@ -20,6 +20,7 @@ passport.use(
         const user = {
           userName: profile.displayName,
           email: profile.emails[0].value,
+          emailVerified : true
         };
         let token;
         // Create a JWT token for the user
