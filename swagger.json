@@ -36,6 +36,7 @@
       "post": {
         "description": "",
         "parameters": [
+          
           {
             "name": "authorization",
             "in": "header",
@@ -128,6 +129,42 @@
                   "example": "any"
                 },
                 "password": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/loginStrategy/verify-email": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "example": "any"
+                },
+                "userName": {
+                  "example": "any"
+                },
+                "password": {
+                  "example": "any"
+                },
+                "otp": {
                   "example": "any"
                 }
               }
@@ -594,6 +631,7 @@
       "post": {
         "description": "",
         "parameters": [
+          
           {
             "name": "authorization",
             "in": "header",
@@ -606,6 +644,57 @@
               "type": "object",
               "properties": {
                 "userId": {
+                  "example": "any"
+                },
+                "trackId": {
+                  "example": "any"
+                },
+                "fee": {
+                  "example": "any"
+                },
+                "coupon": {
+                  "example": "any"
+                },
+                "coursesIds": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/enrolled/enroll-track/with-email": {
+      "post": {
+        "description": "",
+        "parameters": [
+          
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
                   "example": "any"
                 },
                 "trackId": {
@@ -656,11 +745,7 @@
             "required": true,
             "type": "string"
           },
-          {
-            "name": "slice(7",
-            "in": "header",
-            "type": "string"
-          },
+          
           {
             "name": "authorization",
             "in": "header",
@@ -684,6 +769,7 @@
       "get": {
         "description": "",
         "parameters": [
+          
           {
             "name": "authorization",
             "in": "header",
@@ -730,7 +816,7 @@
       "post": {
         "description": "",
         "parameters": [
-      
+          
           {
             "name": "authorization",
             "in": "header",
@@ -761,6 +847,54 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/courses/enroll-courses/with-email": {
+      "post": {
+        "description": "",
+        "parameters": [
+          
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "example": "any"
+                },
+                "courseId": {
+                  "example": "any"
+                },
+                "fee": {
+                  "example": "any"
+                },
+                "coupon": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
           },
           "401": {
             "description": "Unauthorized"
@@ -817,6 +951,7 @@
             "required": true,
             "type": "string"
           },
+          
           {
             "name": "authorization",
             "in": "header",

@@ -4,6 +4,7 @@ const middleware = require("../../middleware/auth");
 const EnrollTrack = require('../../models/EnrollTrack');
 const EnrollCourses = require("../../models/EnrollCourse");
 const Course = require("../../models/Course");
+const User = require('../../models/User');
  
 
 
@@ -60,6 +61,71 @@ router.post('/enroll-track', middleware, (req, res) => {
        }
    });
 });
+
+
+
+router.post('/enroll-track/with-email', middleware, async (req, res) => {
+  const email = req.body.email;
+  let user = await User.findOne({ email });
+
+  if (!user) {
+    return res.status(400).json(
+      {
+        errors: [{ msg: `User with email ${email} does not exists` }]
+      })
+  }
+  // Check if the enrollment already exists
+  EnrollTrack.findOne({ userId: user._id, trackId: req.body.trackId }, (err, existingEnroll) => {
+      if (err) {
+        console.log(err)
+          res.status(500).send('Error occurred');
+      } else if (existingEnroll) {
+          // Enrollment already exists, send an error response
+          res.status(400).send('Enrollment already exists');
+      } else {
+          // Enrollment doesn't exist, create and save a new one
+          const enrollTrack = new EnrollTrack({
+              userId: user._id,
+              trackId: req.body.trackId,
+              enrollDate: Date.now(),
+              expiryDate: Date.now(),
+              feePaid: req.body.fee ?? '',
+              coupon: req.body.coupon ?? ''
+          });
+
+          const enrollCoursePromises = req.body.coursesIds.map((courseId) => {
+           return EnrollCourses.findOne({
+             courseId,
+             userId: user._id,
+           }).then((existingCourse) => {
+             if (!existingCourse) {
+               const enrollCourse = new EnrollCourses({
+                 courseId,
+                 userId: user._id,
+                 feePaid: req.body.fee || '',
+                 coupon: req.body.coupon || '',
+               });
+               return enrollCourse.save();
+             }
+             return null; // Return null for courses that already exist
+           });
+         });
+     
+         const enrolledCourses = Promise.all(enrollCoursePromises);
+          enrolledCourses.then(()=>{
+           enrollTrack.save((err, enrolled) => {
+             if (err) {
+                 res.status(500).send('Error occurred');
+             } else {
+                 res.status(200).send(enrolled);
+             }
+         });
+          })
+        
+      }
+  });
+});
+
 
 router.get('/enrolled-status/:userId/:trackId',middleware,(req, res)=>{
    const { userId, trackId } = req.params;
