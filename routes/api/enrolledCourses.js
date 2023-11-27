@@ -84,7 +84,7 @@ router.get('/all-enrolled-courses/:userId', middleware, async (req, res) => {
 
     const courses = await Course.find(
       { _id: { $in: courseIds } },
-      { _id: 1, name: 1, trackId: 1 }
+      { _id: 1, name: 1, trackId: 1, introVideoCode: 1}
     ).exec();
 
     res.status(200).send(courses);
